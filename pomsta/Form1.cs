@@ -3,6 +3,9 @@ using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Runtime;
+using System.Security.Permissions;
+using System.Drawing.Text;
+using System.Drawing;
 
 namespace pomsta
 {
@@ -13,17 +16,42 @@ namespace pomsta
 
         int hour, min;
 
-        //-- INITIALIZE FORM --
+        [System.Runtime.InteropServices.DllImport("gdi32.dll")]
+        private static extern IntPtr AddFontMemResourceEx(IntPtr pbFont, uint cbFont,
+            IntPtr pdv, [System.Runtime.InteropServices.In] ref uint pcFonts);
 
+        private PrivateFontCollection fonts = new PrivateFontCollection();
+
+        Font myFont;
+
+        //-- INITIALIZE FORM --
         public Form1()
         {
 
             string jsonString = "";
 
+            InitializeComponent();
+            
+            byte[] fontData = Resources.Andika_Regular;
+
+            IntPtr fontPtr = System.Runtime.InteropServices.Marshal.AllocCoTaskMem(fontData.Length);
+            
+            System.Runtime.InteropServices.Marshal.Copy(fontData, 0, fontPtr, fontData.Length);
+            
+            uint dummy = 0;
+            
+            fonts.AddMemoryFont(fontPtr, Resources.Andika_Regular.Length);
+            
+            AddFontMemResourceEx(fontPtr, (uint)Resources.Andika_Regular.Length, IntPtr.Zero, ref dummy);
+            
+            System.Runtime.InteropServices.Marshal.FreeCoTaskMem(fontPtr);
+
+            myFont = new Font(fonts.Families[0], 9.0F);
+
+            this.Font = myFont;
+
             if (File.Exists("data.json"))
                 jsonString = File.ReadAllText("data.json");
-
-            InitializeComponent();
 
             if (jsonString.Length != 0)
                 sites = new BindingList<string>(JsonSerializer.Deserialize<List<string>>(jsonString));
@@ -53,15 +81,7 @@ namespace pomsta
             if (hour * 3600 + min * 60 > time.Hour * 3600 + time.Minute * 60)
             {
 
-                Process process = new Process();
-                ProcessStartInfo startInfo = new ProcessStartInfo();
-
-                startInfo.CreateNoWindow = true;
-                startInfo.FileName = "cmd.exe";
-                startInfo.Arguments = String.Format("/C docker run --name pomsta -ti --rm alpine/bombardier -c 1000 -d {0}s -l https://{1}", (hourNUD.Value - time.Hour) * 3600 + (minNUD.Value - time.Minute) * 60, comboBox1.Text);
-
-                process.StartInfo = startInfo;
-                process.Start();
+                cmd(String.Format("docker run --name pomsta -ti --rm alpine/bombardier -c 1000 -d {0}s -l https://{1}", (hourNUD.Value - time.Hour) * 3600 + (minNUD.Value - time.Minute) * 60, comboBox1.Text));
 
                 this.Text = "Pomsta! - running";
 
@@ -91,15 +111,7 @@ namespace pomsta
 
             DateTime time = DateTime.Now;
 
-            Process process = new Process();
-            ProcessStartInfo startInfo = new ProcessStartInfo();
-
-            startInfo.CreateNoWindow = true;
-            startInfo.FileName = "cmd.exe";
-            startInfo.Arguments = "/C docker stop pomsta";
-
-            process.StartInfo = startInfo;
-            process.Start();
+            cmd("docker stop pomsta");
 
             backgroundWorker1.CancelAsync();
 
@@ -168,6 +180,22 @@ namespace pomsta
             button2.Enabled = false;
 
             this.Text = "Pomsta!";
+
+        }
+
+        //-- EXECUTE COMMAND PROMPT COMMANDS --
+        private void cmd(String cmd)
+        {
+
+            Process process = new Process();
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+
+            startInfo.CreateNoWindow = true;
+            startInfo.FileName = "cmd.exe";
+            startInfo.Arguments = "/C " + cmd;
+
+            process.StartInfo = startInfo;
+            process.Start();
 
         }
     }
