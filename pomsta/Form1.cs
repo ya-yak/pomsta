@@ -6,6 +6,7 @@ using System.Runtime;
 using System.Security.Permissions;
 using System.Drawing.Text;
 using System.Drawing;
+using System.Text.RegularExpressions;
 
 namespace pomsta
 {
@@ -78,7 +79,9 @@ namespace pomsta
             hour = Convert.ToInt32(hourNUD.Value);
             min = Convert.ToInt32(minNUD.Value);
 
-            if (hour * 3600 + min * 60 > time.Hour * 3600 + time.Minute * 60)
+            Regex site = new Regex(@"[a-z]+\.[a-z]+(/?.*)*|[a-z]+\.[a-z]+\.[a-z](/?.*)*");
+
+            if (site.IsMatch(comboBox1.Text) && hour * 3600 + min * 60 > time.Hour * 3600 + time.Minute * 60)
             {
 
                 cmd(String.Format("docker run --name pomsta -ti --rm alpine/bombardier -c 1000 -d {0}s -l https://{1}", (hourNUD.Value - time.Hour) * 3600 + (minNUD.Value - time.Minute) * 60, comboBox1.Text));
@@ -184,6 +187,7 @@ namespace pomsta
         }
 
         //-- EXECUTE COMMAND PROMPT COMMANDS --
+
         private void cmd(String cmd)
         {
 
