@@ -48,7 +48,7 @@
             this.button1.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(60, 31);
-            this.button1.TabIndex = 1;
+            this.button1.TabIndex = 4;
             this.button1.Text = "Kill";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.onButton1Clicked);
@@ -60,7 +60,7 @@
             this.comboBox1.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(238, 31);
-            this.comboBox1.TabIndex = 2;
+            this.comboBox1.TabIndex = 3;
             // 
             // button2
             // 
@@ -86,7 +86,7 @@
             0});
             this.hourNUD.Name = "hourNUD";
             this.hourNUD.Size = new System.Drawing.Size(40, 27);
-            this.hourNUD.TabIndex = 6;
+            this.hourNUD.TabIndex = 1;
             // 
             // minNUD
             // 
@@ -99,7 +99,7 @@
             0});
             this.minNUD.Name = "minNUD";
             this.minNUD.Size = new System.Drawing.Size(40, 27);
-            this.minNUD.TabIndex = 7;
+            this.minNUD.TabIndex = 2;
             // 
             // progressBar1
             // 
@@ -116,7 +116,7 @@
             this.label1.Location = new System.Drawing.Point(58, 16);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(14, 23);
-            this.label1.TabIndex = 9;
+            this.label1.TabIndex = 0;
             this.label1.Text = ":";
             // 
             // backgroundWorker1
